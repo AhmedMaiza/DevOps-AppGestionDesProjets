@@ -1,5 +1,6 @@
 package tn.esprit.backend.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import tn.esprit.backend.repository.ProjetRepository;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -97,4 +99,18 @@ class ProjetDetailleServiceImplTest {
         assertSame(projet, resultat.getProjet());
     }
 
+    @Test
+    void assignProjetDetailleToProjetLeveUneExceptionSiDetailAbsent() {
+        when(projetDetailleRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> service.assignProjetDetailleToProjet(1L, 2L));
+    }
+
+    @Test
+    void assignProjetDetailleToProjetLeveUneExceptionSiProjetAbsent() {
+        when(projetDetailleRepository.findById(1L)).thenReturn(Optional.of(new ProjetDetaille()));
+        when(projetRepository.findById(2L)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> service.assignProjetDetailleToProjet(1L, 2L));
+    }
 }

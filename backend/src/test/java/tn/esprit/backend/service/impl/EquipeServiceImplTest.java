@@ -1,5 +1,6 @@
 package tn.esprit.backend.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import tn.esprit.backend.repository.ProjetRepository;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -103,6 +105,21 @@ class EquipeServiceImplTest {
     }
 
     @Test
+    void assignEquipeToEntrepriseLeveUneExceptionSiEquipeAbsente() {
+        when(equipeRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> service.assignEquipeToEntreprise(1L, 2L));
+    }
+
+    @Test
+    void assignEquipeToEntrepriseLeveUneExceptionSiEntrepriseAbsente() {
+        when(equipeRepository.findById(1L)).thenReturn(Optional.of(new Equipe()));
+        when(entrepriseRepository.findById(2L)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> service.assignEquipeToEntreprise(1L, 2L));
+    }
+
+    @Test
     void assignEquipeToProjetAjouteLeProjetALEquipe() {
         Equipe equipe = new Equipe();
         Projet projet = new Projet();
@@ -115,4 +132,11 @@ class EquipeServiceImplTest {
         assertTrue(resultat.getProjets().contains(projet));
     }
 
+    @Test
+    void assignEquipeToProjetLeveUneExceptionSiProjetAbsent() {
+        when(equipeRepository.findById(1L)).thenReturn(Optional.of(new Equipe()));
+        when(projetRepository.findById(3L)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> service.assignEquipeToProjet(1L, 3L));
+    }
 }
