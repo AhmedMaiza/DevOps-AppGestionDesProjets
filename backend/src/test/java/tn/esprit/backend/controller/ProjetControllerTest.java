@@ -6,10 +6,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tn.esprit.backend.dto.ProjetRequest;
 import tn.esprit.backend.entity.Projet;
 import tn.esprit.backend.service.IProjetService;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -23,19 +25,21 @@ class ProjetControllerTest {
     ProjetController controller;
 
     @Test
-    void addProjetDelegueAuService() {
+    void addProjetConvertitLeDtoEtDelegueAuService() {
         Projet entite = new Projet();
-        when(projetService.addProjet(entite)).thenReturn(entite);
+        when(projetService.addProjet(any(Projet.class))).thenReturn(entite);
 
-        assertSame(entite, controller.addProjet(entite));
+        assertSame(entite, controller.addProjet(new ProjetRequest(1L, "Gestion")));
+        verify(projetService).addProjet(any(Projet.class));
     }
 
     @Test
-    void updateProjetDelegueAuService() {
+    void updateProjetConvertitLeDtoEtDelegueAuService() {
         Projet entite = new Projet();
-        when(projetService.updateProjet(entite)).thenReturn(entite);
+        when(projetService.updateProjet(any(Projet.class))).thenReturn(entite);
 
-        assertSame(entite, controller.updateProjet(entite));
+        assertSame(entite, controller.updateProjet(new ProjetRequest(1L, "Gestion")));
+        verify(projetService).updateProjet(any(Projet.class));
     }
 
     @Test

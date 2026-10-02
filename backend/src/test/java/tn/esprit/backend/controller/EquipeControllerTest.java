@@ -6,10 +6,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tn.esprit.backend.dto.EquipeRequest;
 import tn.esprit.backend.entity.Equipe;
 import tn.esprit.backend.service.IEquipeService;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -23,19 +25,21 @@ class EquipeControllerTest {
     EquipeController controller;
 
     @Test
-    void addEquipeDelegueAuService() {
+    void addEquipeConvertitLeDtoEtDelegueAuService() {
         Equipe entite = new Equipe();
-        when(equipeService.addEquipe(entite)).thenReturn(entite);
+        when(equipeService.addEquipe(any(Equipe.class))).thenReturn(entite);
 
-        assertSame(entite, controller.addEquipe(entite));
+        assertSame(entite, controller.addEquipe(new EquipeRequest(1L, "Equipe A", "DevOps", new EquipeRequest.EntrepriseRef(2L))));
+        verify(equipeService).addEquipe(any(Equipe.class));
     }
 
     @Test
-    void updateEquipeDelegueAuService() {
+    void updateEquipeConvertitLeDtoEtDelegueAuService() {
         Equipe entite = new Equipe();
-        when(equipeService.updateEquipe(entite)).thenReturn(entite);
+        when(equipeService.updateEquipe(any(Equipe.class))).thenReturn(entite);
 
-        assertSame(entite, controller.updateEquipe(entite));
+        assertSame(entite, controller.updateEquipe(new EquipeRequest(1L, "Equipe A", "DevOps", new EquipeRequest.EntrepriseRef(2L))));
+        verify(equipeService).updateEquipe(any(Equipe.class));
     }
 
     @Test

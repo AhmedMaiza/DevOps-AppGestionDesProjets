@@ -1,15 +1,18 @@
 package tn.esprit.backend.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tn.esprit.backend.dto.ProjetDetailleRequest;
 import tn.esprit.backend.entity.ProjetDetaille;
 import tn.esprit.backend.service.IProjetDetailleService;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -23,19 +26,21 @@ class ProjetDetailleControllerTest {
     ProjetDetailleController controller;
 
     @Test
-    void addProjetDetailleDelegueAuService() {
+    void addProjetDetailleConvertitLeDtoEtDelegueAuService() {
         ProjetDetaille entite = new ProjetDetaille();
-        when(projetDetailleService.addProjetDetaille(entite)).thenReturn(entite);
+        when(projetDetailleService.addProjetDetaille(any(ProjetDetaille.class))).thenReturn(entite);
 
-        assertSame(entite, controller.addProjetDetaille(entite));
+        assertSame(entite, controller.addProjetDetaille(new ProjetDetailleRequest(1L, "desc", "Java", 1500.0, LocalDate.of(2026, 1, 1))));
+        verify(projetDetailleService).addProjetDetaille(any(ProjetDetaille.class));
     }
 
     @Test
-    void updateProjetDetailleDelegueAuService() {
+    void updateProjetDetailleConvertitLeDtoEtDelegueAuService() {
         ProjetDetaille entite = new ProjetDetaille();
-        when(projetDetailleService.updateProjetDetaille(entite)).thenReturn(entite);
+        when(projetDetailleService.updateProjetDetaille(any(ProjetDetaille.class))).thenReturn(entite);
 
-        assertSame(entite, controller.updateProjetDetaille(entite));
+        assertSame(entite, controller.updateProjetDetaille(new ProjetDetailleRequest(1L, "desc", "Java", 1500.0, LocalDate.of(2026, 1, 1))));
+        verify(projetDetailleService).updateProjetDetaille(any(ProjetDetaille.class));
     }
 
     @Test

@@ -15,7 +15,8 @@ REPOS = [e + 'Repository' for e in ENT]
 STATIC = {'assertSame': 'org.junit.jupiter.api.Assertions', 'assertNull': 'org.junit.jupiter.api.Assertions',
           'assertEquals': 'org.junit.jupiter.api.Assertions', 'assertThrows': 'org.junit.jupiter.api.Assertions',
           'assertTrue': 'org.junit.jupiter.api.Assertions',
-          'when': 'org.mockito.Mockito', 'verify': 'org.mockito.Mockito'}
+          'when': 'org.mockito.Mockito', 'verify': 'org.mockito.Mockito',
+          'any': 'org.mockito.ArgumentMatchers'}
 
 
 def render(pkg, cls, mocks, body):
@@ -30,6 +31,8 @@ def render(pkg, cls, mocks, body):
     imps |= {f'tn.esprit.backend.entity.{e}' for e in ENT if re.search(rf'\b{e}\b', code)}
     imps |= {f'tn.esprit.backend.repository.{r}' for r in REPOS if re.search(rf'\b{r}\b', code)}
     imps |= {f'tn.esprit.backend.service.{i}' for i in re.findall(r'\bI(?:Entreprise|Equipe|Projet|ProjetDetaille)Service\b', code)}
+    imps |= {f'tn.esprit.backend.dto.{e}Request' for e in ENT if re.search(rf'\b{e}Request\b', code)}
+    if re.search(r'\bLocalDate\b', code): imps.add('java.time.LocalDate')
     if 'EntityNotFoundException' in code: imps.add('jakarta.persistence.EntityNotFoundException')
     if re.search(r'\bList\b', code): imps.add('java.util.List')
     if re.search(r'\bOptional\b', code): imps.add('java.util.Optional')
@@ -93,7 +96,65 @@ def svc_crud(E, repo, S):
 '''
 
 
+DTO_NEW = {
+    'Entreprise': 'new EntrepriseRequest(1L, "Esprit", "Ariana")',
+    'Equipe': 'new EquipeRequest(1L, "Equipe A", "DevOps", new EquipeRequest.EntrepriseRef(2L))',
+    'Projet': 'new ProjetRequest(1L, "Gestion")',
+    'ProjetDetaille': 'new ProjetDetailleRequest(1L, "desc", "Java", 1500.0, LocalDate.of(2026, 1, 1))',
+}
+
+
 def ctl_crud(E, svc, S):
+    if MODE == 'fix':
+        return ctl_crud_dto(E, svc, S)
+    return ctl_crud_entity(E, svc, S)
+
+
+def ctl_crud_dto(E, svc, S):
+    return f'''    @Test
+    void add{E}_convertitLeDtoEtDelegueAuService() {{
+        {E} entite = new {E}();
+        when({svc}.add{E}(any({E}.class))).thenReturn(entite);
+
+        assertSame(entite, controller.add{E}({DTO_NEW[E]}));
+        verify({svc}).add{E}(any({E}.class));
+    }}
+
+    @Test
+    void update{E}_convertitLeDtoEtDelegueAuService() {{
+        {E} entite = new {E}();
+        when({svc}.update{E}(any({E}.class))).thenReturn(entite);
+
+        assertSame(entite, controller.update{E}({DTO_NEW[E]}));
+        verify({svc}).update{E}(any({E}.class));
+    }}
+
+    @Test
+    void delete{E}_delegueAuService() {{
+        controller.delete{E}(4L);
+
+        verify({svc}).delete{E}(4L);
+    }}
+
+    @Test
+    void get{E}ById_delegueAuService() {{
+        {E} entite = new {E}();
+        when({svc}.get{E}ById(4L)).thenReturn(entite);
+
+        assertSame(entite, controller.get{E}ById(4L));
+    }}
+
+    @Test
+    void getAll{S}_delegueAuService() {{
+        List<{E}> liste = List.of(new {E}());
+        when({svc}.getAll{S}()).thenReturn(liste);
+
+        assertSame(liste, controller.getAll{S}());
+    }}
+'''
+
+
+def ctl_crud_entity(E, svc, S):
     return f'''    @Test
     void add{E}_delegueAuService() {{
         {E} entite = new {E}();

@@ -6,10 +6,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tn.esprit.backend.dto.EntrepriseRequest;
 import tn.esprit.backend.entity.Entreprise;
 import tn.esprit.backend.service.IEntrepriseService;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -23,19 +25,21 @@ class EntrepriseControllerTest {
     EntrepriseController controller;
 
     @Test
-    void addEntrepriseDelegueAuService() {
+    void addEntrepriseConvertitLeDtoEtDelegueAuService() {
         Entreprise entite = new Entreprise();
-        when(entrepriseService.addEntreprise(entite)).thenReturn(entite);
+        when(entrepriseService.addEntreprise(any(Entreprise.class))).thenReturn(entite);
 
-        assertSame(entite, controller.addEntreprise(entite));
+        assertSame(entite, controller.addEntreprise(new EntrepriseRequest(1L, "Esprit", "Ariana")));
+        verify(entrepriseService).addEntreprise(any(Entreprise.class));
     }
 
     @Test
-    void updateEntrepriseDelegueAuService() {
+    void updateEntrepriseConvertitLeDtoEtDelegueAuService() {
         Entreprise entite = new Entreprise();
-        when(entrepriseService.updateEntreprise(entite)).thenReturn(entite);
+        when(entrepriseService.updateEntreprise(any(Entreprise.class))).thenReturn(entite);
 
-        assertSame(entite, controller.updateEntreprise(entite));
+        assertSame(entite, controller.updateEntreprise(new EntrepriseRequest(1L, "Esprit", "Ariana")));
+        verify(entrepriseService).updateEntreprise(any(Entreprise.class));
     }
 
     @Test
