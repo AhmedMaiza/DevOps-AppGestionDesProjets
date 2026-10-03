@@ -2,6 +2,7 @@ package tn.esprit.backend.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import tn.esprit.backend.dto.EntrepriseRequest;
 import tn.esprit.backend.entity.Entreprise;
 import tn.esprit.backend.service.IEntrepriseService;
 
@@ -15,13 +16,13 @@ public class EntrepriseController {
     IEntrepriseService entrepriseService;
 
     @PostMapping("/add")
-    public Entreprise addEntreprise(@RequestBody Entreprise entreprise) {
-        return entrepriseService.addEntreprise(entreprise);
+    public Entreprise addEntreprise(@RequestBody EntrepriseRequest entreprise) {
+        return entrepriseService.addEntreprise(entreprise.toEntity());
     }
 
     @PutMapping("/update")
-    public Entreprise updateEntreprise(@RequestBody Entreprise entreprise) {
-        return entrepriseService.updateEntreprise(entreprise);
+    public Entreprise updateEntreprise(@RequestBody EntrepriseRequest entreprise) {
+        return entrepriseService.updateEntreprise(entreprise.toEntity());
     }
 
     @DeleteMapping("/delete/{id}")

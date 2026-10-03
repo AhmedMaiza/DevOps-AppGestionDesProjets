@@ -2,6 +2,7 @@ package tn.esprit.backend.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import tn.esprit.backend.dto.ProjetRequest;
 import tn.esprit.backend.entity.Projet;
 import tn.esprit.backend.service.IProjetService;
 
@@ -15,13 +16,13 @@ public class ProjetController {
     IProjetService projetService;
 
     @PostMapping("/add")
-    public Projet addProjet(@RequestBody Projet projet) {
-        return projetService.addProjet(projet);
+    public Projet addProjet(@RequestBody ProjetRequest projet) {
+        return projetService.addProjet(projet.toEntity());
     }
 
     @PutMapping("/update")
-    public Projet updateProjet(@RequestBody Projet projet) {
-        return projetService.updateProjet(projet);
+    public Projet updateProjet(@RequestBody ProjetRequest projet) {
+        return projetService.updateProjet(projet.toEntity());
     }
 
     @DeleteMapping("/delete/{id}")
