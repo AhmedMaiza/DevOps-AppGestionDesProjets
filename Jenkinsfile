@@ -19,7 +19,7 @@ pipeline {
         SONAR_PUBLIC_URL   = 'http://192.168.33.10:9000'
         SONAR_BACKEND_KEY  = 'gestion-projets-backend'
         SONAR_FRONTEND_KEY = 'gestion-projets-frontend'
-        REGISTRY       = 'localhost:5000'
+        REGISTRY       = 'docker.io/ahmedmaiza'
         REGISTRY_CREDS = 'dockerhub-creds'
     }
 
